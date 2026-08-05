@@ -42,7 +42,7 @@ export default async function Home() {
 
   return (
     <main className="container">
-      <h1 className="title">🏠 Casa Brisas</h1>
+      <h1 className="improvements-title">🏠 Casa Brisas</h1>
 
       <div className="cards">
         <Card
