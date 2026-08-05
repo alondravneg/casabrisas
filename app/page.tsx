@@ -56,16 +56,19 @@ export default async function Home() {
         />
 
         <Card
+          title="📅 Meses totales cubiertos"
+          value={mesesCubiertos.toString()}
+        />
+
+        <Card
           title={`💵 Crédito acumulado para ${nombreMesCapitalizado}`}
           value={`$${creditoActual.toLocaleString()}`}
         />
 
         <Card
-          title="📅 Meses totales cubiertos"
-          value={mesesCubiertos.toString()}
+          title="📅 Próxima renta a vencer, considerando los meses ya cubiertos"
+          value={nombreMesCapitalizado}
         />
-
-        <Card title="📅 Próxima renta a vencer, considerando los meses ya cubiertos" value={nombreMesCapitalizado} />
       </div>
 
       <div className="progress-card">
