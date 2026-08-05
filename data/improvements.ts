@@ -15,5 +15,6 @@ export const improvements: Improvement[] = [
     notes: "Instalación de cerradura",
 
     images: [],
+    imageUrl: ""
   },
 ];
