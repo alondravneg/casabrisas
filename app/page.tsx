@@ -70,6 +70,27 @@ export default async function Home() {
       <div className="improvements">
         {improvements?.map((item) => (
           <div key={item.id} className="improvement-card">
+            {item.image_url && (
+              <a
+                href={item.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  style={{
+                    width: "100%",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: "12px",
+                    marginBottom: "1rem",
+                    cursor: "pointer",
+                  }}
+                />
+              </a>
+            )}
+
             <h3>{item.title}</h3>
 
             <p>{item.category}</p>

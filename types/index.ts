@@ -13,6 +13,7 @@ export interface Improvement {
   notes: string;
 
   images?: string[];
+  imageUrl: string;
 }
 
 export interface RentInfo {
