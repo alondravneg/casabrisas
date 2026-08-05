@@ -56,7 +56,7 @@ export default async function Home() {
         />
 
         <Card
-          title="💵 Crédito acumulado"
+          title={`💵 Crédito acumulado para ${nombreMesCapitalizado}`}
           value={`$${creditoActual.toLocaleString()}`}
         />
 
