@@ -94,6 +94,8 @@ export default function AddImprovementForm({ onAdd }: Props) {
         <input
           name="materialCost"
           type="number"
+          step="0.01"
+          inputMode="decimal"
           placeholder="$0"
           onChange={handleChange}
         />
@@ -104,6 +106,8 @@ export default function AddImprovementForm({ onAdd }: Props) {
         <input
           name="laborCost"
           type="number"
+          step="0.01"
+          inputMode="decimal"
           placeholder="$0"
           onChange={handleChange}
         />
