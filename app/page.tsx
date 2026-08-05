@@ -76,18 +76,25 @@ export default async function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  style={{
-                    width: "100%",
-                    height: "120px",
-                    objectFit: "cover",
-                    borderRadius: "12px",
-                    marginBottom: "1rem",
-                    cursor: "pointer",
-                  }}
-                />
+                {item.image_url && (
+                  <>
+                    <p style={{ color: "red" }}>Imagen encontrada ✅</p>
+
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        minHeight: "120px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        marginBottom: "1rem",
+                        border: "3px solid blue",
+                      }}
+                    />
+                  </>
+                )}
               </a>
             )}
 
