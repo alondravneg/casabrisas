@@ -20,6 +20,20 @@ export default async function Home() {
 
   const mesesCubiertos = Math.floor(totalInvertido / rentaMensual);
 
+  const fechaInicio = new Date(2027, 0, 1); // Enero 2027
+
+  const proximaRenta = new Date(fechaInicio);
+
+  proximaRenta.setMonth(proximaRenta.getMonth() + mesesCubiertos);
+
+  const nombreMes = proximaRenta.toLocaleDateString("es-MX", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const nombreMesCapitalizado =
+    nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+
   const creditoActual = totalInvertido % rentaMensual;
 
   const faltante = rentaMensual - creditoActual;
@@ -50,6 +64,8 @@ export default async function Home() {
           title="📅 Meses totales cubiertos"
           value={mesesCubiertos.toString()}
         />
+
+        <Card title="📅 Próxima renta a vencer, considerando los meses ya cubiertos" value={nombreMesCapitalizado} />
       </div>
 
       <div className="progress-card">
