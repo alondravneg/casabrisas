@@ -32,11 +32,14 @@ export default async function Home() {
 
       <div className="cards">
         <Card
+          title="📆 Renta mensual acordada"
+          value={`$${rentaMensual.toLocaleString()}`}
+        />
+
+        <Card
           title="💰 Total invertido"
           value={`$${totalInvertido.toLocaleString()}`}
         />
-
-        <Card title="📅 Meses cubiertos" value={mesesCubiertos.toString()} />
 
         <Card
           title="💵 Crédito acumulado"
@@ -44,8 +47,8 @@ export default async function Home() {
         />
 
         <Card
-          title="📆 Renta mensual"
-          value={`$${rentaMensual.toLocaleString()}`}
+          title="📅 Meses totales cubiertos"
+          value={mesesCubiertos.toString()}
         />
       </div>
 
