@@ -20,7 +20,7 @@ export default async function Home() {
 
   const mesesCubiertos = Math.floor(totalInvertido / rentaMensual);
 
-  const fechaInicio = new Date(2027, 0, 1); // Enero 2027
+  const fechaInicio = new Date(2026, 11, 1); // Enero 2027
 
   const proximaRenta = new Date(fechaInicio);
 
