@@ -321,7 +321,6 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
-      <div className="improvements">...</div>
 
       {imageToDelete && (
         <div className="modal-overlay">
