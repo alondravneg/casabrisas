@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import ImageModal from "./ImageModal";
 import Image from "next/image";
+
+import ImageModal from "./ImageModal";
 
 type Props = {
   item: {
@@ -14,7 +15,9 @@ type Props = {
     labor_cost: number;
 
     improvement_images: {
+      id: number;
       image_url: string;
+      is_deleted: boolean;
     }[];
   };
 };
@@ -22,12 +25,15 @@ type Props = {
 export default function ImprovementCard({ item }: Props) {
   const [showModal, setShowModal] = useState(false);
 
+  const activeImages =
+    item.improvement_images?.filter((image) => !image.is_deleted) ?? [];
+
   return (
     <>
       <div className="improvement-card">
-        {item.improvement_images?.length > 0 && (
+        {activeImages.length > 0 && (
           <Image
-            src={item.improvement_images[0].image_url}
+            src={activeImages[0].image_url}
             alt={item.title}
             width={400}
             height={250}
@@ -51,9 +57,9 @@ export default function ImprovementCard({ item }: Props) {
         </strong>
       </div>
 
-      {showModal && (
+      {showModal && activeImages.length > 0 && (
         <ImageModal
-          images={item.improvement_images}
+          images={item.improvement_images.filter((img) => !img.is_deleted)}
           onClose={() => setShowModal(false)}
         />
       )}

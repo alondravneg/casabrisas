@@ -25,10 +25,16 @@ type ImprovementRow = {
   labor_cost: number;
   paid_by: string;
   notes: string;
+  improvement_images: {
+    id: number;
+    image_url: string;
+    is_deleted: boolean;
+  }[];
 };
 
 export default function AdminPage() {
   const [improvements, setImprovements] = useState<ImprovementRow[]>([]);
+  const [imageToDelete, setImageToDelete] = useState<number | null>(null);
   const [editingImprovement, setEditingImprovement] =
     useState<ImprovementRow | null>(null);
 
@@ -39,7 +45,16 @@ export default function AdminPage() {
   async function loadImprovements() {
     const { data, error } = await supabase
       .from("improvements")
-      .select("*")
+      .select(
+        `
+    *,
+    improvement_images (
+      id,
+      image_url,
+      is_deleted
+    )
+  `,
+      )
       .order("date", { ascending: false });
 
     if (error) {
@@ -48,6 +63,40 @@ export default function AdminPage() {
     }
 
     setImprovements(data ?? []);
+  }
+
+  async function deleteImage(imageId: number) {
+    const { error } = await supabase
+      .from("improvement_images")
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+      })
+      .eq("id", imageId);
+
+    if (error) {
+      console.error(error);
+      alert("Error eliminando imagen");
+      return;
+    }
+
+    setEditingImprovement((current) => {
+      if (!current) return null;
+
+      return {
+        ...current,
+        improvement_images: current.improvement_images.map((img) =>
+          img.id === imageId
+            ? {
+                ...img,
+                is_deleted: true,
+              }
+            : img,
+        ),
+      };
+    });
+
+    await loadImprovements();
   }
 
   async function saveImprovement(improvement: Improvement) {
@@ -74,12 +123,6 @@ export default function AdminPage() {
       }
 
       improvementId = editingImprovement.id!;
-
-      // Borramos las imágenes anteriores
-      await supabase
-        .from("improvement_images")
-        .delete()
-        .eq("improvement_id", improvementId);
     } else {
       const { data, error } = await supabase
         .from("improvements")
@@ -105,31 +148,33 @@ export default function AdminPage() {
     }
 
     // Subir todas las imágenes
-    for (const file of improvement.images) {
-      const fileName = `${Date.now()}-${crypto.randomUUID()}-${file.name}`;
+    if (improvement.images.length > 0) {
+      for (const file of improvement.images) {
+        const fileName = `${Date.now()}-${crypto.randomUUID()}-${file.name}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("improvements")
-        .upload(fileName, file);
+        const { error: uploadError } = await supabase.storage
+          .from("improvements")
+          .upload(fileName, file);
 
-      if (uploadError) {
-        console.error(uploadError);
-        continue;
-      }
+        if (uploadError) {
+          console.error(uploadError);
+          continue;
+        }
 
-      const { data } = supabase.storage
-        .from("improvements")
-        .getPublicUrl(fileName);
+        const { data } = supabase.storage
+          .from("improvements")
+          .getPublicUrl(fileName);
 
-      const { error: imageError } = await supabase
-        .from("improvement_images")
-        .insert({
-          improvement_id: improvementId,
-          image_url: data.publicUrl,
-        });
+        const { error: imageError } = await supabase
+          .from("improvement_images")
+          .insert({
+            improvement_id: improvementId,
+            image_url: data.publicUrl,
+          });
 
-      if (imageError) {
-        console.error(imageError);
+        if (imageError) {
+          console.error(imageError);
+        }
       }
     }
 
@@ -141,7 +186,7 @@ export default function AdminPage() {
 
     setEditingImprovement(null);
 
-    loadImprovements();
+    await loadImprovements();
   }
 
   return (
@@ -176,13 +221,69 @@ export default function AdminPage() {
         }
       />
 
+      {editingImprovement &&
+        editingImprovement.improvement_images?.filter((img) => !img.is_deleted)
+          .length > 0 && (
+          <div
+            style={{
+              marginTop: "1rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <h3 className="section-title">📷 Fotos actuales</h3>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                flexWrap: "wrap",
+              }}
+            >
+              {editingImprovement.improvement_images
+                .filter((img) => !img.is_deleted)
+                .map((image) => (
+                  <div
+                    key={image.id}
+                    style={{
+                      position: "relative",
+                    }}
+                  >
+                    <img
+                      src={image.image_url}
+                      alt=""
+                      className="current-image"
+                    />
+
+                    <button
+                      onClick={() => setImageToDelete(image.id)}
+                      style={{
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "30px",
+                        height: "30px",
+                        cursor: "pointer",
+                        background: "#fff",
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
       <h2
         style={{
           marginTop: "2rem",
           marginBottom: "1rem",
         }}
+        className="section-title"
       >
-        Mejoras existentes
+        🏚️ Mejoras existentes
       </h2>
 
       <div className="improvements">
@@ -204,16 +305,55 @@ export default function AdminPage() {
             <strong>
               ${(item.material_cost + item.labor_cost).toLocaleString()}
             </strong>
-
-            <button
-              className="edit-button"
-              onClick={() => setEditingImprovement(item)}
-            >
-              ✏️ Editar
-            </button>
+            <p style={{ color: "#777", fontSize: ".85rem", marginBottom: ".9rem" }}>
+              📷{" "}
+              {item.improvement_images.filter((img) => !img.is_deleted).length}{" "}
+              fotos
+            </p>
+            <p>
+              <button
+                className="cancel-edit-button"
+                onClick={() => setEditingImprovement(item)}
+              >
+                ✏️ Editar
+              </button>
+            </p>
           </div>
         ))}
       </div>
+      <div className="improvements">...</div>
+
+      {imageToDelete && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <h3>Eliminar fotografía</h3>
+
+            <p>
+              La fotografía se ocultará del historial, pero podrá recuperarse
+              después.
+            </p>
+
+            <div className="confirm-actions">
+              <button
+                className="secondary-button"
+                onClick={() => setImageToDelete(null)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="danger-button"
+                onClick={async () => {
+                  await deleteImage(imageToDelete);
+                  setImageToDelete(null);
+                }}
+              >
+                Sí, eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
