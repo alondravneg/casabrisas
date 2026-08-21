@@ -10,7 +10,7 @@ type Improvement = {
   laborCost: number;
   paidBy: string;
   notes: string;
-  image: File | null;
+  images: File[];
 };
 
 type Props = {
@@ -34,7 +34,7 @@ export default function AddImprovementForm({
     laborCost: "",
     paidBy: "",
     notes: "",
-    image: null as File | null,
+    images: [] as File[],
   });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function AddImprovementForm({
         laborCost: initialData.laborCost.toString(),
         paidBy: initialData.paidBy,
         notes: initialData.notes,
-        image: null,
+        images: initialData.images,
       });
     } else {
       setForm({
@@ -58,7 +58,7 @@ export default function AddImprovementForm({
         laborCost: "",
         paidBy: "",
         notes: "",
-        image: null,
+        images: [],
       });
     }
   }, [initialData]);
@@ -75,11 +75,11 @@ export default function AddImprovementForm({
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0] ?? null;
+    const files = Array.from(e.target.files ?? []);
 
     setForm((prev) => ({
       ...prev,
-      image: file,
+      images: files,
     }));
   }
 
@@ -94,7 +94,7 @@ export default function AddImprovementForm({
       laborCost: Number(form.laborCost),
       paidBy: form.paidBy,
       notes: form.notes,
-      image: form.image,
+      images: form.images,
     });
   }
 
@@ -186,7 +186,38 @@ export default function AddImprovementForm({
       <div className="field field-full">
         <label>Fotografía</label>
 
-        <input type="file" onChange={handleFileChange} />
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+
+        {form.images.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+              marginTop: "1rem",
+            }}
+          >
+            {form.images.map((file, index) => (
+              <img
+                key={index}
+                src={URL.createObjectURL(file)}
+                alt={file.name}
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                  border: "1px solid #ddd",
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <button type="submit" className="save-button">

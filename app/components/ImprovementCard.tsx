@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ImageModal from "./ImageModal";
+import Image from "next/image";
 
 type Props = {
   item: {
@@ -11,7 +12,10 @@ type Props = {
     date: string;
     material_cost: number;
     labor_cost: number;
-    image_url?: string;
+
+    improvement_images: {
+      image_url: string;
+    }[];
   };
 };
 
@@ -21,16 +25,20 @@ export default function ImprovementCard({ item }: Props) {
   return (
     <>
       <div className="improvement-card">
-        {item.image_url && (
-          <img
-            src={item.image_url}
+        {item.improvement_images?.length > 0 && (
+          <Image
+            src={item.improvement_images[0].image_url}
             alt={item.title}
+            width={400}
+            height={250}
             className="improvement-image"
             onClick={() => setShowModal(true)}
           />
         )}
 
-        <h3>{item.title} | {item.category}</h3>
+        <h3>
+          {item.title} | {item.category}
+        </h3>
 
         <p className="date-text">{item.date}</p>
 
@@ -43,9 +51,9 @@ export default function ImprovementCard({ item }: Props) {
         </strong>
       </div>
 
-      {showModal && item.image_url && (
+      {showModal && (
         <ImageModal
-          imageUrl={item.image_url}
+          images={item.improvement_images}
           onClose={() => setShowModal(false)}
         />
       )}

@@ -6,9 +6,12 @@ import Card from "./components/Card";
 import ImprovementCard from "./components/ImprovementCard";
 
 export default async function Home() {
-  const { data: improvements } = await supabase
-    .from("improvements")
-    .select("*");
+  const { data: improvements } = await supabase.from("improvements").select(`
+    *,
+    improvement_images (
+      image_url
+    )
+  `);
 
   const totalInvertido =
     improvements?.reduce(
