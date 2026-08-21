@@ -52,6 +52,11 @@ export default function ImprovementCard({ item }: Props) {
 
         <p>Materiales: ${item.material_cost.toLocaleString()}</p>
 
+        <p style={{ color: "#777", fontSize: ".85rem", marginBottom: ".9rem" }}>
+          📷 {item.improvement_images.filter((img) => !img.is_deleted).length}{" "}
+          fotos
+        </p>
+
         <strong>
           ${(item.material_cost + item.labor_cost).toLocaleString()}
         </strong>
