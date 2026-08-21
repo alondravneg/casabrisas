@@ -5,15 +5,29 @@ import { supabase } from "@/utils/supabase";
 import Card from "./components/Card";
 import ImprovementCard from "./components/ImprovementCard";
 
-export default async function Home() {
-  const { data: improvements } = await supabase.from("improvements").select(`
-  *,
-  improvement_images (
-    id,
-    image_url,
-    is_deleted
-  )
-`);
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string }>;
+}) {
+  const params = await searchParams;
+
+  const sort = params.sort === "asc" ? "asc" : "desc";
+  const { data: improvements } = await supabase
+    .from("improvements")
+    .select(
+      `
+    *,
+    improvement_images (
+      id,
+      image_url,
+      is_deleted
+    )
+  `,
+    )
+    .order("date", {
+      ascending: sort === "asc",
+    });
 
   const totalInvertido =
     improvements?.reduce(
@@ -97,7 +111,19 @@ export default async function Home() {
       </div>
 
       <h2 className="improvements-title">🔨 Mejoras</h2>
+      <p>
+          Ordenar por fecha:
+        </p>
 
+      <div className="sort-buttons">
+        <a href="/?sort=desc" className={sort === "desc" ? "active" : ""}>
+          Más recientes
+        </a>
+
+        <a href="/?sort=asc" className={sort === "asc" ? "active" : ""}>
+          Más antiguas
+        </a>
+      </div>
       <div className="improvements">
         {improvements?.map((item) => (
           <ImprovementCard key={item.id} item={item} />
